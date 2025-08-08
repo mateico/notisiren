@@ -1,17 +1,11 @@
 package com.example.notisiren
 
 import android.content.ComponentName
-import android.content.Context
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
-import android.media.Ringtone
-import android.provider.Settings
 
 class MyNotificationListener : NotificationListenerService() {
-
-    private var ringtone: Ringtone? = null
-
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
        val packageName = sbn.packageName
@@ -41,9 +35,9 @@ class MyNotificationListener : NotificationListenerService() {
         Log.d("NotificationService", "NotificationListenerService created")
     }
 
-    fun isNotificationServiceEnabled(context: Context): Boolean {
+    /*fun isNotificationServiceEnabled(context: Context): Boolean {
         val cn = ComponentName(context, MyNotificationListener::class.java)
         val flat = Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners")
         return flat?.contains(cn.flattenToString()) == true
-    }
+    }*/
 }
