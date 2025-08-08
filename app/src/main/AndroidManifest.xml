@@ -3,7 +3,7 @@
 
     <application
         android:allowBackup="true"
-        android:label="Email Alarm"
+        android:label="NotiSiren"
         android:supportsRtl="true"
         >
 

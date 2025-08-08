@@ -23,7 +23,7 @@ class MyNotificationListener : NotificationListenerService() {
 
        //Log.d("NotificationCheck", "Title: $title | Text: $text")
 
-       if (title.contains("urgente", true) || text.contains("mateo.rial@gmail.com", true)) {
+       if (title.contains("urgent", true) || text.contains("mateo.rial@gmail.com", true)) {
            AlarmUtils.startAlarm(this)
        }
 
