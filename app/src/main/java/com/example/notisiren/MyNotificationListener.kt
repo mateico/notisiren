@@ -15,8 +15,6 @@ class MyNotificationListener : NotificationListenerService() {
        val title = extras.getString("android.title") ?: ""
        val text = extras.getString("android.text") ?: ""
 
-       //Log.d("NotificationCheck", "Title: $title | Text: $text")
-
        if (title.contains("urgent", true) || text.contains("mateo.rial@gmail.com", true)) {
            AlarmUtils.startAlarm(this)
        }
