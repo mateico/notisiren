@@ -17,7 +17,7 @@ class MyNotificationListener : NotificationListenerService() {
        val title = extras.getString("android.title") ?: ""
        val text = extras.getString("android.text") ?: ""
 
-       if (title.contains("urgent", true) || text.contains("mateo.rial@gmail.com", true)) {
+       if (title.contains("me", true) || text.contains("urgent", true)) {
            AlarmUtils.startAlarm(this)
            AlarmRepository.setAlarming(true)
        }
@@ -35,10 +35,4 @@ class MyNotificationListener : NotificationListenerService() {
         super.onCreate()
         Log.d("NotificationService", "NotificationListenerService created")
     }
-
-    /*fun isNotificationServiceEnabled(context: Context): Boolean {
-        val cn = ComponentName(context, MyNotificationListener::class.java)
-        val flat = Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners")
-        return flat?.contains(cn.flattenToString()) == true
-    }*/
 }
