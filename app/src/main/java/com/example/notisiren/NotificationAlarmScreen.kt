@@ -7,11 +7,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.notisiren.ui.NotiSirenEvent
+import com.example.notisiren.ui.NotiSirenState
 
 @Composable
 fun NotificationAlarmScreen(
-    onEnableNotifications: () -> Unit,
-    onStopAlarm: () -> Unit
+    state: NotiSirenState,
+    onEvent: (NotiSirenEvent) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = Modifier
@@ -20,12 +23,29 @@ fun NotificationAlarmScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Button(onClick = onEnableNotifications) {
-            Text("Habilitar Acceso a Notificaciones")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onStopAlarm) {
-            Text("Stop Alarm")
+
+        val accessLabel =
+            if(state.notificationAccessEnabled) "Notificaciones habilitadas ✅"
+        else "Habilitar Acceso a Notificaciones"
+
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(24.dp),
+        ) {
+            Button(
+                onClick = {onEvent(NotiSirenEvent.ClickEnableNotification)},
+                enabled = !state.notificationAccessEnabled
+            ) {
+                Text(accessLabel)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = { onEvent(NotiSirenEvent.ClickStopAlarm) },
+                enabled = state.isAlarming
+            ) {
+                Text(if (state.isAlarming) "Stop Alarm" else "Alarma detenida")
+            }
         }
     }
 }
@@ -34,7 +54,7 @@ fun NotificationAlarmScreen(
 @Composable
 fun NotificationAlarmScreenPreview() {
     NotificationAlarmScreen(
-        onEnableNotifications = {},
-        onStopAlarm = {}
+        state = NotiSirenState(),
+        onEvent = {}
     )
 }
