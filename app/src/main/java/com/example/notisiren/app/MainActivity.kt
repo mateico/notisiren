@@ -1,4 +1,4 @@
-package com.example.notisiren
+package com.example.notisiren.app
 
 import android.content.Intent
 import android.os.Bundle
@@ -17,10 +17,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.notisiren.core.AlarmControllerImpl
-import com.example.notisiren.core.NotificationAccessCheckerImpl
-import com.example.notisiren.core.NotiSirenViewModel
+import com.example.notisiren.data.AlarmControllerImpl
+import com.example.notisiren.data.NotificationAccessCheckerImpl
 import com.example.notisiren.ui.NotiSirenEffect
+import com.example.notisiren.ui.NotiSirenViewModel
+import com.example.notisiren.ui.NotificationAlarmScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -61,7 +62,7 @@ class MainActivity : ComponentActivity() {
                 NotificationAlarmScreen(
                     state = state,
                     onEvent = viewModel::onEvent,
-                    modifier = Modifier.padding(innerPadding)
+                    modifier = Modifier.Companion.padding(innerPadding)
                 )
             }
         }

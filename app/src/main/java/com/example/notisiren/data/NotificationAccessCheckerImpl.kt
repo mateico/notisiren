@@ -1,10 +1,10 @@
-package com.example.notisiren.core
+package com.example.notisiren.data
 
 import android.content.ComponentName
 import android.content.Context
 import android.provider.Settings
-import com.example.notisiren.MyNotificationListener
-import kotlin.jvm.java
+import com.example.notisiren.domain.NotificationAccessChecker
+import com.example.notisiren.service.MyNotificationListener
 
 class NotificationAccessCheckerImpl(
     private val appContext: Context

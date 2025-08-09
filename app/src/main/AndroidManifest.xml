@@ -8,7 +8,7 @@
         android:supportsRtl="true"
         >
 
-        <activity android:name="com.example.notisiren.MainActivity"
+        <activity android:name="com.example.notisiren.app.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -17,7 +17,7 @@
         </activity>
 
         <service
-            android:name="com.example.notisiren.MyNotificationListener"
+            android:name="com.example.notisiren.service.MyNotificationListener"
             android:exported="false"
             android:label="Email Alarm Listener"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">

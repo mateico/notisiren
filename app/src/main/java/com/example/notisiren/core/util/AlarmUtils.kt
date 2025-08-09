@@ -1,9 +1,10 @@
-package com.example.notisiren
+package com.example.notisiren.core.util
 
 import android.content.Context
 import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
+import com.example.notisiren.R
 
 object AlarmUtils {
 

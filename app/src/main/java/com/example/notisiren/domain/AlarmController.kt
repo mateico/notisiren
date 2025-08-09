@@ -1,4 +1,4 @@
-package com.example.notisiren.core
+package com.example.notisiren.domain
 
 interface AlarmController {
     fun startAlarm()

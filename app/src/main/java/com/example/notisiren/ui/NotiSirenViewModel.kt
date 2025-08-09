@@ -1,10 +1,9 @@
-package com.example.notisiren.core
+package com.example.notisiren.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.notisiren.ui.NotiSirenEffect
-import com.example.notisiren.ui.NotiSirenEvent
-import com.example.notisiren.ui.NotiSirenState
+import com.example.notisiren.domain.AlarmController
+import com.example.notisiren.domain.NotificationAccessChecker
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +19,7 @@ class NotiSirenViewModel(
     private val _state = MutableStateFlow(NotiSirenState())
     val state: StateFlow<NotiSirenState> = _state.asStateFlow()
 
-    private val _effect = Channel<NotiSirenEffect>(Channel.BUFFERED)
+    private val _effect = Channel<NotiSirenEffect>(Channel.Factory.BUFFERED)
     val effect = _effect.receiveAsFlow()
 
     init {

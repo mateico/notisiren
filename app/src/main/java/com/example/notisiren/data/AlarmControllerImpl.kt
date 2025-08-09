@@ -1,7 +1,8 @@
-package com.example.notisiren.core
+package com.example.notisiren.data
 
 import android.content.Context
-import com.example.notisiren.AlarmUtils
+import com.example.notisiren.core.util.AlarmUtils
+import com.example.notisiren.domain.AlarmController
 
 class AlarmControllerImpl(
     private val appContext: Context
