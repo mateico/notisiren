@@ -6,7 +6,7 @@ import android.provider.Settings
 import com.example.notisiren.MyNotificationListener
 import kotlin.jvm.java
 
-class AndroidNotificationAccessChecker(
+class NotificationAccessCheckerImpl(
     private val appContext: Context
 ): NotificationAccessChecker {
     override fun isEnabled(): Boolean {

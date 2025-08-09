@@ -17,8 +17,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.notisiren.core.AndroidAlarmController
-import com.example.notisiren.core.AndroidNotificationAccessChecker
+import com.example.notisiren.core.AlarmControllerImpl
+import com.example.notisiren.core.NotificationAccessCheckerImpl
 import com.example.notisiren.core.NotiSirenViewModel
 import com.example.notisiren.ui.NotiSirenEffect
 
@@ -29,8 +29,8 @@ class MainActivity : ComponentActivity() {
         object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                val alarm = AndroidAlarmController(applicationContext)
-                val access = AndroidNotificationAccessChecker(applicationContext)
+                val alarm = AlarmControllerImpl(applicationContext)
+                val access = NotificationAccessCheckerImpl(applicationContext)
                 return NotiSirenViewModel(alarm, access) as T
             }
         }
