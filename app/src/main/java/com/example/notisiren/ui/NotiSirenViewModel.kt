@@ -2,12 +2,14 @@ package com.example.notisiren.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.notisiren.data.AlarmRepository
 import com.example.notisiren.domain.AlarmController
 import com.example.notisiren.domain.NotificationAccessChecker
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
@@ -23,6 +25,11 @@ class NotiSirenViewModel(
     val effect = _effect.receiveAsFlow()
 
     init {
+        viewModelScope.launch {
+            AlarmRepository.isAlarming.collectLatest { running ->
+                _state.value = _state.value.copy(isAlarming = running)
+            }
+        }
         refreshAccess()
     }
 
@@ -45,12 +52,15 @@ class NotiSirenViewModel(
     }
 
     private fun stopAlarm() {
-        runCatching { alarm.stopAlarm() }
+        runCatching {
+            alarm.stopAlarm()
+            AlarmRepository.setAlarming(false)
+        }
             .onSuccess {
                 _state.value = _state.value.copy(isAlarming = false)
             }
             .onFailure {
-                _state.value = _state.value.copy(error = it.message?: "Unknown error")
+                _state.value = _state.value.copy(error = it.message ?: "Unknown error")
                 viewModelScope.launch {
                     _effect.send(NotiSirenEffect.ShowMessage("Failed to stop alarm"))
                 }

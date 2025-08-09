@@ -5,6 +5,7 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import com.example.notisiren.core.util.AlarmUtils
+import com.example.notisiren.data.AlarmRepository
 
 class MyNotificationListener : NotificationListenerService() {
 
@@ -18,6 +19,7 @@ class MyNotificationListener : NotificationListenerService() {
 
        if (title.contains("urgent", true) || text.contains("mateo.rial@gmail.com", true)) {
            AlarmUtils.startAlarm(this)
+           AlarmRepository.setAlarming(true)
        }
 
        Log.d("NotificationCheck", "[$packageName] Title: $title | Text: $text")
