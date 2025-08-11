@@ -3,6 +3,7 @@ package com.example.notisiren.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.notisiren.data.AlarmRepository
+import com.example.notisiren.data.ListenerRepository
 import com.example.notisiren.domain.AlarmController
 import com.example.notisiren.domain.NotificationAccessChecker
 import kotlinx.coroutines.channels.Channel
@@ -28,6 +29,11 @@ class NotiSirenViewModel(
         viewModelScope.launch {
             AlarmRepository.isAlarming.collectLatest { running ->
                 _state.value = _state.value.copy(isAlarming = running)
+            }
+        }
+        viewModelScope.launch {
+            ListenerRepository.isListening.collectLatest { listening ->
+                _state.value = _state.value.copy(isListening = listening)
             }
         }
         refreshAccess()
