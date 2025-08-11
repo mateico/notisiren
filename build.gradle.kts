@@ -4,3 +4,15 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose) apply false
 }
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    // 🔧 Force plugin classpath to use a modern JavaPoet
+    configurations.classpath {
+        resolutionStrategy.force("com.squareup:javapoet:1.13.0")
+    }
+}

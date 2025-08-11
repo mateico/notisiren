@@ -12,8 +12,10 @@ import android.util.Log
 import com.example.notisiren.core.util.AlarmUtils
 import com.example.notisiren.data.AlarmRepository
 import com.example.notisiren.data.ListenerRepository
+import jakarta.inject.Inject
 
 class MyNotificationListener : NotificationListenerService() {
+    @Inject lateinit var alarmRepository: AlarmRepository
 
     @Volatile private var isBoundBySystem: Boolean = false
     private var settingsObserver: ContentObserver? = null
@@ -56,7 +58,7 @@ class MyNotificationListener : NotificationListenerService() {
 
         if (title.contains("me", true) || text.contains("urgent", true)) {
             AlarmUtils.startAlarm(this)
-            AlarmRepository.setAlarming(true)
+            alarmRepository.setAlarming(true)
         }
 
         Log.d(TAG, "[$packageName] Title: $title | Text: $text")

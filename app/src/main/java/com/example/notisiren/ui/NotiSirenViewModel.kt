@@ -6,6 +6,8 @@ import com.example.notisiren.data.AlarmRepository
 import com.example.notisiren.data.ListenerRepository
 import com.example.notisiren.domain.AlarmController
 import com.example.notisiren.domain.NotificationAccessChecker
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +16,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class NotiSirenViewModel(
+@HiltViewModel
+class NotiSirenViewModel @Inject constructor(
     private val alarm: AlarmController,
     private val access: NotificationAccessChecker
 ) : ViewModel() {

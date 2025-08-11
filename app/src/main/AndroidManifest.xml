@@ -2,6 +2,7 @@
     package="com.example.notisiren">
 
     <application
+        android:name=".app.NotiSirenApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="NotiSiren"

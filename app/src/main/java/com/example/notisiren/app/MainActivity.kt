@@ -15,29 +15,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.example.notisiren.data.AlarmControllerImpl
-import com.example.notisiren.data.NotificationAccessCheckerImpl
 import com.example.notisiren.ui.NotiSirenEffect
 import com.example.notisiren.ui.NotiSirenViewModel
 import com.example.notisiren.ui.NotificationAlarmScreen
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    // Simple factory so we avoid DI for now
-    private val vmFactory by lazy {
-        object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                val alarm = AlarmControllerImpl(applicationContext)
-                val access = NotificationAccessCheckerImpl(applicationContext)
-                return NotiSirenViewModel(alarm, access) as T
-            }
-        }
-    }
-
-    private val viewModel: NotiSirenViewModel by viewModels { vmFactory }
+    private val viewModel: NotiSirenViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
