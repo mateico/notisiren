@@ -1,6 +1,5 @@
 package com.example.notisiren.di
 
-import androidx.compose.ui.test.isEnabled
 import com.example.notisiren.domain.AlarmController
 import com.example.notisiren.domain.NotificationAccessChecker
 import dagger.Module
