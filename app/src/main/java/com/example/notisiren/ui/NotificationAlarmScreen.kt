@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -40,14 +41,15 @@ fun NotificationAlarmScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = { onEvent(NotiSirenEvent.ClickEnableNotification) },
-                enabled = !state.notificationAccessEnabled
+                enabled = !state.notificationAccessEnabled,
+                modifier = Modifier.testTag("btn_enable_notifications")
             ) {
                 Text(accessLabel)
             }
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = { onEvent(NotiSirenEvent.ClickStopAlarm) },
-                enabled = state.isAlarming
+                enabled = state.isAlarming,
             ) {
                 Text(if (state.isAlarming) "Stop Alarm" else "Alarma detenida")
             }

@@ -44,6 +44,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+
             Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { innerPadding ->
                 NotificationAlarmScreen(
                     state = state,

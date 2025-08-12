@@ -1,5 +1,6 @@
 package com.example.notisiren.di
 
+import androidx.compose.ui.test.isEnabled
 import com.example.notisiren.domain.AlarmController
 import com.example.notisiren.domain.NotificationAccessChecker
 import dagger.Module
@@ -19,7 +20,12 @@ object TestAppModule {
     fun provideAlarmController(): AlarmController = FakeAlarmController()
 
     @Provides @Singleton
-    fun provideNotificationAccessChecker(): NotificationAccessChecker = FakeAccessChecker()
+    fun provideFakeAccessChecker(): FakeAccessChecker = FakeAccessChecker().apply {
+        enabled = true
+    }
+
+    @Provides @Singleton
+    fun provideNotificationAccessChecker(fake: FakeAccessChecker): NotificationAccessChecker = fake
 }
 
 class FakeAlarmController : AlarmController {
