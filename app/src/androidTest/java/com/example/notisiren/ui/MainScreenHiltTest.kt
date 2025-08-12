@@ -23,6 +23,7 @@ class MainScreenHiltTest {
     @Before
     fun setup() {
         hiltRule.inject()
+        access.enabled = true
     }
 
     @Test

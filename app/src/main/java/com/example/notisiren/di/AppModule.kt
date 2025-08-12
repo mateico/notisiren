@@ -2,11 +2,14 @@ package com.example.notisiren.di
 
 import android.content.Context
 import com.example.notisiren.data.AlarmControllerImpl
-import com.example.notisiren.data.AlarmRepository
-import com.example.notisiren.data.ListenerRepository
+import com.example.notisiren.data.AlarmStatusRepositoryImpl
+import com.example.notisiren.data.NotificationListenerRepositoryImpl
 import com.example.notisiren.data.NotificationAccessCheckerImpl
 import com.example.notisiren.domain.AlarmController
+import com.example.notisiren.domain.AlarmStatusRepository
 import com.example.notisiren.domain.NotificationAccessChecker
+import com.example.notisiren.domain.NotificationListenerRepository
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,25 +19,30 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+abstract class AppModule {
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideAlarmRepository(): AlarmRepository = AlarmRepository
+    abstract fun bindAlarmStatusRepository(
+        impl: AlarmStatusRepositoryImpl
+    ): AlarmStatusRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideListenerRepository(): ListenerRepository = ListenerRepository
+    abstract fun bindNotificationListenerRepository(
+        impl: NotificationListenerRepositoryImpl
+    ): NotificationListenerRepository
 
-    @Provides
-    @Singleton
-    fun provideNotificationAccessChecker(@ApplicationContext app: Context): NotificationAccessChecker =
-        NotificationAccessCheckerImpl(app)
+    companion object {
 
-    @Provides
-    @Singleton
-    fun provideAlarmController(@ApplicationContext app: Context): AlarmController =
-        AlarmControllerImpl(app)
+        @Provides
+        @Singleton
+        fun provideNotificationAccessChecker(@ApplicationContext app: Context): NotificationAccessChecker =
+            NotificationAccessCheckerImpl(app)
 
-
+        @Provides
+        @Singleton
+        fun provideAlarmController(@ApplicationContext app: Context): AlarmController =
+            AlarmControllerImpl(app)
+    }
 }

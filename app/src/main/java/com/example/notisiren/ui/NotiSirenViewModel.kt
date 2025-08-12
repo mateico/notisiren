@@ -2,10 +2,10 @@ package com.example.notisiren.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.notisiren.data.AlarmRepository
-import com.example.notisiren.data.ListenerRepository
 import com.example.notisiren.domain.AlarmController
+import com.example.notisiren.domain.AlarmStatusRepository
 import com.example.notisiren.domain.NotificationAccessChecker
+import com.example.notisiren.domain.NotificationListenerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.channels.Channel
@@ -19,7 +19,9 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class NotiSirenViewModel @Inject constructor(
     private val alarm: AlarmController,
-    private val access: NotificationAccessChecker
+    private val access: NotificationAccessChecker,
+    private val alarmStatusRepo: AlarmStatusRepository,
+    private val notificationListenerRepo: NotificationListenerRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(NotiSirenState())
@@ -30,12 +32,12 @@ class NotiSirenViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            AlarmRepository.isAlarming.collectLatest { running ->
+            alarmStatusRepo.isAlarming.collectLatest { running ->
                 _state.value = _state.value.copy(isAlarming = running)
             }
         }
         viewModelScope.launch {
-            ListenerRepository.isListening.collectLatest { listening ->
+            notificationListenerRepo.isListening.collectLatest { listening ->
                 _state.value = _state.value.copy(isListening = listening)
             }
         }
@@ -45,7 +47,8 @@ class NotiSirenViewModel @Inject constructor(
     fun onEvent(event: NotiSirenEvent) {
         when (event) {
             NotiSirenEvent.ClickEnableNotification ->
-                viewModelScope.launch {_effect.send(NotiSirenEffect.OpenNotificationAccessSettings)}
+                viewModelScope.launch { _effect.send(NotiSirenEffect.OpenNotificationAccessSettings) }
+
             NotiSirenEvent.ClickStopAlarm -> stopAlarm()
             NotiSirenEvent.RefreshAccess -> refreshAccess()
         }
@@ -63,7 +66,7 @@ class NotiSirenViewModel @Inject constructor(
     private fun stopAlarm() {
         runCatching {
             alarm.stopAlarm()
-            AlarmRepository.setAlarming(false)
+            alarmStatusRepo.setAlarming(false)
         }
             .onSuccess {
                 _state.value = _state.value.copy(isAlarming = false)
@@ -73,6 +76,7 @@ class NotiSirenViewModel @Inject constructor(
                 viewModelScope.launch {
                     _effect.send(NotiSirenEffect.ShowMessage("Failed to stop alarm"))
                 }
+
             }
     }
 }

@@ -10,12 +10,14 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import com.example.notisiren.core.util.AlarmUtils
-import com.example.notisiren.data.AlarmRepository
-import com.example.notisiren.data.ListenerRepository
+import com.example.notisiren.data.AlarmStatusRepositoryImpl
+import com.example.notisiren.data.NotificationListenerRepositoryImpl
 import jakarta.inject.Inject
 
 class MyNotificationListener : NotificationListenerService() {
-    @Inject lateinit var alarmRepository: AlarmRepository
+    @Inject lateinit var alarmRepository: AlarmStatusRepositoryImpl
+
+    @Inject lateinit var NotificationListenerRepository: NotificationListenerRepositoryImpl
 
     @Volatile private var isBoundBySystem: Boolean = false
     private var settingsObserver: ContentObserver? = null
@@ -82,7 +84,7 @@ class MyNotificationListener : NotificationListenerService() {
 
     private fun publishListeningState() {
         val enabled = isUserEnabledInSettings(this)
-        ListenerRepository.setListening(enabled)
+        NotificationListenerRepository.setIsListening(enabled)
     }
 
     fun isUserEnabledInSettings(context: Context): Boolean {

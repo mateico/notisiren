@@ -3,7 +3,7 @@ package com.example.notisiren.ui
 import com.example.notisiren.MainDispatcherRule
 import com.example.notisiren.domain.AlarmController
 import com.example.notisiren.domain.NotificationAccessChecker
-import com.example.notisiren.data.AlarmRepository
+import com.example.notisiren.data.AlarmStatusRepositoryImpl
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -34,13 +34,16 @@ class NotiSirenViewModelTest {
     private lateinit var viewModel: NotiSirenViewModel
     private lateinit var alarm: FakeAlarm
     private lateinit var access: FakeAccess
+    private lateinit var alarmRepo: FakeAlarmStatusRepository
+    private lateinit var notificationListenerRepo: FakeNotificationListenerRepository
 
     @Before
     fun setUp() {
-        AlarmRepository.setAlarming(false)
         alarm = FakeAlarm()
         access = FakeAccess(true)
-        viewModel = NotiSirenViewModel(alarm, access)
+        alarmRepo = FakeAlarmStatusRepository()
+        notificationListenerRepo = FakeNotificationListenerRepository()
+        viewModel = NotiSirenViewModel(alarm, access, alarmRepo, notificationListenerRepo)
     }
 
     @Test
@@ -53,14 +56,14 @@ class NotiSirenViewModelTest {
 
     @Test
     fun `repo change reflects in state`() = runTest {
-        AlarmRepository.setAlarming(true)
+        alarmRepo.setAlarming(true)
         advanceUntilIdle()
         assertThat(viewModel.state.value.isAlarming).isTrue()
     }
 
     @Test
     fun `ClickStopAlarm stops and clears state`() = runTest {
-        AlarmRepository.setAlarming(true)
+        alarmRepo.setAlarming(true)
 
         advanceUntilIdle()
 
