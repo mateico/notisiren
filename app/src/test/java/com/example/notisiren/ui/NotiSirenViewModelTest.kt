@@ -3,7 +3,6 @@ package com.example.notisiren.ui
 import com.example.notisiren.MainDispatcherRule
 import com.example.notisiren.domain.AlarmController
 import com.example.notisiren.domain.NotificationAccessChecker
-import com.example.notisiren.data.AlarmStatusRepositoryImpl
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -12,16 +11,23 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-private class FakeAlarm : AlarmController {
+private class FakeAlarmController (val alarmRepo: FakeAlarmStatusRepository) : AlarmController {
 
     var isAlarming = false
         private set
 
-    override fun startAlarm() { isAlarming = true }
-    override fun stopAlarm() { isAlarming = false }
+    override fun startAlarm() {
+        isAlarming = true
+        alarmRepo.setAlarming(true)
+    }
+
+    override fun stopAlarm() {
+        isAlarming = false
+        alarmRepo.setAlarming(false)
+    }
 }
 
-private class FakeAccess(var value: Boolean) : NotificationAccessChecker {
+private class FakeNotificationAccessChecker(var value: Boolean) : NotificationAccessChecker {
     override fun isEnabled(): Boolean = value
 }
 
@@ -32,23 +38,23 @@ class NotiSirenViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private lateinit var viewModel: NotiSirenViewModel
-    private lateinit var alarm: FakeAlarm
-    private lateinit var access: FakeAccess
+    private lateinit var alarmController: FakeAlarmController
+    private lateinit var fakeNotificationAccessChecker: FakeNotificationAccessChecker
     private lateinit var alarmRepo: FakeAlarmStatusRepository
     private lateinit var notificationListenerRepo: FakeNotificationListenerRepository
 
     @Before
     fun setUp() {
-        alarm = FakeAlarm()
-        access = FakeAccess(true)
         alarmRepo = FakeAlarmStatusRepository()
+        alarmController = FakeAlarmController(alarmRepo)
+        fakeNotificationAccessChecker = FakeNotificationAccessChecker(true)
         notificationListenerRepo = FakeNotificationListenerRepository()
-        viewModel = NotiSirenViewModel(alarm, access, alarmRepo, notificationListenerRepo)
+        viewModel = NotiSirenViewModel(alarmController, fakeNotificationAccessChecker, alarmRepo, notificationListenerRepo)
     }
 
     @Test
     fun `refresh updates access flag`() = runTest {
-        access.value = false
+        fakeNotificationAccessChecker.value = false
         viewModel.onEvent(NotiSirenEvent.RefreshAccess)
         advanceUntilIdle()
         assertThat(viewModel.state.value.notificationAccessEnabled).isFalse()
@@ -56,22 +62,24 @@ class NotiSirenViewModelTest {
 
     @Test
     fun `repo change reflects in state`() = runTest {
-        alarmRepo.setAlarming(true)
+        alarmController.startAlarm()
         advanceUntilIdle()
         assertThat(viewModel.state.value.isAlarming).isTrue()
     }
 
     @Test
     fun `ClickStopAlarm stops and clears state`() = runTest {
-        alarmRepo.setAlarming(true)
-
+        alarmController.startAlarm()
         advanceUntilIdle()
 
         assertThat(viewModel.state.value.isAlarming).isTrue()
 
         viewModel.onEvent(NotiSirenEvent.ClickStopAlarm)
 
-        assertThat(alarm.isAlarming).isFalse()
+        // let viewmodelScope/stateIn process the change
+        advanceUntilIdle()
+
+        assertThat(alarmController.isAlarming).isFalse()
         assertThat(viewModel.state.value.isAlarming).isFalse()
     }
 

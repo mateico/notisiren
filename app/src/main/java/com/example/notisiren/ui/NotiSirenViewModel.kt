@@ -7,40 +7,43 @@ import com.example.notisiren.domain.AlarmStatusRepository
 import com.example.notisiren.domain.NotificationAccessChecker
 import com.example.notisiren.domain.NotificationListenerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 @HiltViewModel
 class NotiSirenViewModel @Inject constructor(
-    private val alarm: AlarmController,
-    private val access: NotificationAccessChecker,
-    private val alarmStatusRepo: AlarmStatusRepository,
+    private val alarmController: AlarmController,
+    private val notificationAccessChecker: NotificationAccessChecker,
+    private val alarmRepository: AlarmStatusRepository,
     private val notificationListenerRepo: NotificationListenerRepository
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(NotiSirenState())
-    val state: StateFlow<NotiSirenState> = _state.asStateFlow()
+    private val _local = MutableStateFlow(NotiSirenState())
+
+    // the state is derived using combine which reads from the repos.
+    val state: StateFlow<NotiSirenState> =
+        combine(
+            alarmRepository.isAlarming,
+            notificationListenerRepo.isListening,
+            _local
+        ) { isAlarming ,isListening, local ->
+            local.copy( isAlarming = isAlarming, isListening = isListening)
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, NotiSirenState())
 
     private val _effect = Channel<NotiSirenEffect>(Channel.Factory.BUFFERED)
     val effect = _effect.receiveAsFlow()
 
     init {
-        viewModelScope.launch {
-            alarmStatusRepo.isAlarming.collectLatest { running ->
-                _state.value = _state.value.copy(isAlarming = running)
-            }
-        }
-        viewModelScope.launch {
-            notificationListenerRepo.isListening.collectLatest { listening ->
-                _state.value = _state.value.copy(isListening = listening)
-            }
-        }
         refreshAccess()
     }
 
@@ -55,28 +58,26 @@ class NotiSirenViewModel @Inject constructor(
     }
 
     private fun refreshAccess() {
-        _state.value = _state.value.copy(isLoading = true)
-        val enabled = access.isEnabled()
-        _state.value = _state.value.copy(
-            notificationAccessEnabled = enabled,
-            isLoading = false
-        )
+        viewModelScope.launch {
+            _local.update { it.copy(isLoading = true) }
+
+            val enabled = withContext(Dispatchers.IO) {
+                notificationAccessChecker.isEnabled()
+            }
+
+            _local.update { it.copy(notificationAccessEnabled = enabled, isLoading = false) }
+        }
+
     }
 
     private fun stopAlarm() {
-        runCatching {
-            alarm.stopAlarm()
-            alarmStatusRepo.setAlarming(false)
+        viewModelScope.launch {
+            try {
+                alarmController.stopAlarm()
+            } catch (e: Exception) {
+                _effect.send(NotiSirenEffect.ShowMessage("Failed to stop alarm"))
+                _local.update { it.copy(error = e.message ?: "Unknown error") }
+            }
         }
-            .onSuccess {
-                _state.value = _state.value.copy(isAlarming = false)
-            }
-            .onFailure {
-                _state.value = _state.value.copy(error = it.message ?: "Unknown error")
-                viewModelScope.launch {
-                    _effect.send(NotiSirenEffect.ShowMessage("Failed to stop alarm"))
-                }
-
-            }
     }
 }

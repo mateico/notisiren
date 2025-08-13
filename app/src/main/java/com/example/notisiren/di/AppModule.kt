@@ -43,6 +43,6 @@ abstract class AppModule {
         @Provides
         @Singleton
         fun provideAlarmController(@ApplicationContext app: Context): AlarmController =
-            AlarmControllerImpl(app)
+            AlarmControllerImpl(app, AlarmStatusRepositoryImpl())
     }
 }
