@@ -24,8 +24,8 @@ import javax.inject.Inject
 class NotiSirenViewModel @Inject constructor(
     private val alarmController: AlarmController,
     private val notificationAccessChecker: NotificationAccessChecker,
-    private val alarmRepository: AlarmStatusRepository,
-    private val notificationListenerRepo: NotificationListenerRepository
+    alarmRepository: AlarmStatusRepository,
+    notificationListenerRepo: NotificationListenerRepository
 ) : ViewModel() {
 
     private val _local = MutableStateFlow(NotiSirenState())
