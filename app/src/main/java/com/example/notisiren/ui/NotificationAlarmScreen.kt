@@ -53,6 +53,13 @@ fun NotificationAlarmScreen(
             ) {
                 Text(if (state.isAlarming) "Stop Alarm" else "Alarma detenida")
             }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = { onEvent(NotiSirenEvent.ClickStartAlarm) },
+                enabled = !state.isAlarming,
+            ) {
+                Text(if (state.isAlarming) "Alarming!!" else "Start Alarm")
+            }
         }
     }
 }

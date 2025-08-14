@@ -31,7 +31,7 @@ class NotiSirenViewModel @Inject constructor(// Mateo: @Inject tells Hilt how to
     // Mateo: Checks if notification access is enabled for the app
     private val notificationAccessChecker: NotificationAccessChecker,
     // Mateo: Exposes current alarm status as a Flow and allows updating it
-    alarmRepository: AlarmStatusRepository,
+    private val alarmRepository: AlarmStatusRepository,
     // Mateo: Emits changes when notification listener service is active
     notificationListenerRepo: NotificationListenerRepository
 ) : ViewModel() {
@@ -51,6 +51,8 @@ class NotiSirenViewModel @Inject constructor(// Mateo: @Inject tells Hilt how to
             notificationListenerRepo.isListening, // Mateo: Flow<Boolean> for listener status
             _local                                // Mateo: MutableStateFlow with flags & errors
         ) { isAlarming, isListening, local ->
+            println("DEBUG: isAlarming=$isAlarming, isListening=$isListening")
+
             // Mateo: Create a new state with values from repos + local state
             local.copy(isAlarming = isAlarming, isListening = isListening)
         }.stateIn(
@@ -74,13 +76,13 @@ class NotiSirenViewModel @Inject constructor(// Mateo: @Inject tells Hilt how to
     fun onEvent(event: NotiSirenEvent) {
         when (event) {
             NotiSirenEvent.ClickEnableNotification ->
-
                 // Mateo: viewModelScope uses the Dispatchers.Main coroutine dispatcher by default
                 // starts and runs on the main (UI) thread, unless explicitly switched with withContext(...)
                 viewModelScope.launch { _effect.send(NotiSirenEffect.OpenNotificationAccessSettings) }
 
             NotiSirenEvent.ClickStopAlarm -> stopAlarm()
             NotiSirenEvent.RefreshAccess -> refreshAccess()
+            NotiSirenEvent.ClickStartAlarm -> startAlarm()
         }
     }
 
@@ -106,6 +108,19 @@ class NotiSirenViewModel @Inject constructor(// Mateo: @Inject tells Hilt how to
                 alarmController.stopAlarm()
             } catch (e: Exception) {
                 _effect.send(NotiSirenEffect.ShowMessage("Failed to stop alarm"))
+                _local.update { it.copy(error = e.message ?: "Unknown error") }
+            }
+        }
+    }
+
+    private fun startAlarm() {
+        viewModelScope.launch {
+            try {
+                alarmController.startAlarm()
+                //AlarmUtils.startAlarm(this)
+                //alarmRepository.setAlarming(true)
+            } catch (e: Exception) {
+                _effect.send(NotiSirenEffect.ShowMessage("Failed to start alarm"))
                 _local.update { it.copy(error = e.message ?: "Unknown error") }
             }
         }

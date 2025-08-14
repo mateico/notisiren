@@ -9,7 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 
 class NotificationAccessCheckerImpl @Inject constructor(
-    @ApplicationContext private val appContext: Context
+    @param:ApplicationContext private val appContext: Context
 ): NotificationAccessChecker {
     override fun isEnabled(): Boolean {
         val component = ComponentName(appContext, MyNotificationListener::class.java)
