@@ -117,8 +117,6 @@ class NotiSirenViewModel @Inject constructor(// Mateo: @Inject tells Hilt how to
         viewModelScope.launch {
             try {
                 alarmController.startAlarm()
-                //AlarmUtils.startAlarm(this)
-                //alarmRepository.setAlarming(true)
             } catch (e: Exception) {
                 _effect.send(NotiSirenEffect.ShowMessage("Failed to start alarm"))
                 _local.update { it.copy(error = e.message ?: "Unknown error") }
