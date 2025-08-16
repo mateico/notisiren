@@ -1,5 +1,6 @@
 package com.example.notisiren.di
 
+import android.app.PendingIntent
 import com.example.notisiren.domain.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,4 +27,18 @@ class FakeAlarmController : AlarmController {
         private set
     override fun startAlarm() { isAlarming = true }
     override fun stopAlarm()  { isAlarming = false }
+}
+
+class FakeNotificationHelper : NotificationHelper {
+    override fun createNotificationChannel() {
+        TODO("Not yet implemented")
+    }
+
+    override fun createStopAlarmPendingIntent(): PendingIntent {
+        TODO("Not yet implemented")
+    }
+
+    override fun showAlarmNotification(title: String, content: String) {
+        TODO("Not yet implemented")
+    }
 }

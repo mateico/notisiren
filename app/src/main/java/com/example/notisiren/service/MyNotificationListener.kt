@@ -10,20 +10,34 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import com.example.notisiren.core.util.AlarmUtils
-import com.example.notisiren.data.AlarmStatusRepositoryImpl
-import com.example.notisiren.data.NotificationListenerRepositoryImpl
-import jakarta.inject.Inject
+import com.example.notisiren.di.ServiceEntryPoint
+import com.example.notisiren.domain.AlarmStatusRepository
+import com.example.notisiren.domain.NotificationHelper
+import com.example.notisiren.domain.NotificationListenerRepository
+import dagger.hilt.android.EntryPointAccessors
 
 class MyNotificationListener : NotificationListenerService() {
-    @Inject lateinit var alarmRepository: AlarmStatusRepositoryImpl
 
-    @Inject lateinit var NotificationListenerRepository: NotificationListenerRepositoryImpl
+    private lateinit var alarmRepo: AlarmStatusRepository
+    private lateinit var notificationListenerRepository: NotificationListenerRepository
+
+    private lateinit var notificationHelper: NotificationHelper
 
     @Volatile private var isBoundBySystem: Boolean = false
     private var settingsObserver: ContentObserver? = null
 
     override fun onCreate() {
         super.onCreate()
+
+        val entryPoint = EntryPointAccessors.fromApplication(
+            applicationContext,
+            ServiceEntryPoint::class.java
+        )
+
+        alarmRepo = entryPoint.alarmStatusRepository()
+        notificationListenerRepository = entryPoint.notificationListenerRepository()
+        notificationHelper = entryPoint.notificationHelper()
+
         Log.d(TAG, "Service created")
         registerEnabledObserver()
         publishListeningState()
@@ -59,11 +73,16 @@ class MyNotificationListener : NotificationListenerService() {
         val text = extras.getString("android.text") ?: ""
 
         if (title.contains("me", true) || text.contains("urgent", true)) {
-            AlarmUtils.startAlarm(this)
-            alarmRepository.setAlarming(true)
+            startAlarm(title, text)
         }
 
         Log.d(TAG, "[$packageName] Title: $title | Text: $text")
+    }
+
+    private fun startAlarm(title: String, text: String) {
+        AlarmUtils.startAlarm(this)
+        alarmRepo.setAlarming(true)
+        notificationHelper.showAlarmNotification(title, text)
     }
 
     // --- Enable-in-settings + bound state helper ---
@@ -84,7 +103,7 @@ class MyNotificationListener : NotificationListenerService() {
 
     private fun publishListeningState() {
         val enabled = isUserEnabledInSettings(this)
-        NotificationListenerRepository.setIsListening(enabled)
+        notificationListenerRepository.setIsListening(enabled)
     }
 
     fun isUserEnabledInSettings(context: Context): Boolean {

@@ -1,10 +1,14 @@
 package com.example.notisiren.ui
 
+import android.Manifest
+import android.annotation.SuppressLint
+import androidx.annotation.RequiresPermission
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.notisiren.domain.AlarmController
 import com.example.notisiren.domain.AlarmStatusRepository
 import com.example.notisiren.domain.NotificationAccessChecker
+import com.example.notisiren.domain.NotificationHelper
 import com.example.notisiren.domain.NotificationListenerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +35,8 @@ class NotiSirenViewModel @Inject constructor(// Mateo: @Inject tells Hilt how to
     // Mateo: Checks if notification access is enabled for the app
     private val notificationAccessChecker: NotificationAccessChecker,
     // Mateo: Exposes current alarm status as a Flow and allows updating it
-    private val alarmRepository: AlarmStatusRepository,
+    alarmRepository: AlarmStatusRepository,
+    private val notificationHelper: NotificationHelper,
     // Mateo: Emits changes when notification listener service is active
     notificationListenerRepo: NotificationListenerRepository
 ) : ViewModel() {
@@ -113,14 +118,21 @@ class NotiSirenViewModel @Inject constructor(// Mateo: @Inject tells Hilt how to
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun startAlarm() {
         viewModelScope.launch {
             try {
                 alarmController.startAlarm()
+                triggerNotification("my título", "my message")
             } catch (e: Exception) {
                 _effect.send(NotiSirenEffect.ShowMessage("Failed to start alarm"))
                 _local.update { it.copy(error = e.message ?: "Unknown error") }
             }
         }
+    }
+
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    fun triggerNotification(title: String, message: String) {
+        notificationHelper.showAlarmNotification(title, message)
     }
 }

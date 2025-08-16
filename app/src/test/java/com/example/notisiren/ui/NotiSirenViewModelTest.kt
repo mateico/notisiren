@@ -41,6 +41,7 @@ class NotiSirenViewModelTest {
     private lateinit var alarmController: FakeAlarmController
     private lateinit var fakeNotificationAccessChecker: FakeNotificationAccessChecker
     private lateinit var alarmRepo: FakeAlarmStatusRepository
+    private lateinit var notificationHelper: FakeNotificationHelper
     private lateinit var notificationListenerRepo: FakeNotificationListenerRepository
 
     @Before
@@ -48,8 +49,14 @@ class NotiSirenViewModelTest {
         alarmRepo = FakeAlarmStatusRepository()
         alarmController = FakeAlarmController(alarmRepo)
         fakeNotificationAccessChecker = FakeNotificationAccessChecker(true)
+        notificationHelper = FakeNotificationHelper()
         notificationListenerRepo = FakeNotificationListenerRepository()
-        viewModel = NotiSirenViewModel(alarmController, fakeNotificationAccessChecker, alarmRepo, notificationListenerRepo)
+        viewModel = NotiSirenViewModel(
+            alarmController,
+            fakeNotificationAccessChecker,
+            alarmRepo,
+            notificationHelper,
+            notificationListenerRepo)
     }
 
     @Test

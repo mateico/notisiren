@@ -21,13 +21,15 @@
 
         <service
             android:name="com.example.notisiren.service.MyNotificationListener"
-            android:exported="false"
+            android:exported="true"
             android:label="Email Alarm Listener"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
+
+        <receiver android:name=".receiver.StopAlarmReceiver" />
 
     </application>
 </manifest>

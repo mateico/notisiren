@@ -3,10 +3,12 @@ package com.example.notisiren.di
 import com.example.notisiren.data.AlarmControllerImpl
 import com.example.notisiren.data.AlarmStatusRepositoryImpl
 import com.example.notisiren.data.NotificationAccessCheckerImpl
+import com.example.notisiren.data.NotificationHelperImpl
 import com.example.notisiren.data.NotificationListenerRepositoryImpl
 import com.example.notisiren.domain.AlarmController
 import com.example.notisiren.domain.AlarmStatusRepository
 import com.example.notisiren.domain.NotificationAccessChecker
+import com.example.notisiren.domain.NotificationHelper
 import com.example.notisiren.domain.NotificationListenerRepository
 import dagger.Binds
 import dagger.Module
@@ -41,4 +43,10 @@ abstract class AppModule {
     abstract fun bindNotificationAccessChecker(
         impl: NotificationAccessCheckerImpl
     ): NotificationAccessChecker
+
+    @Binds
+    @Singleton
+    abstract fun bindNotificationHelper(
+        impl: NotificationHelperImpl
+    ): NotificationHelper
 }

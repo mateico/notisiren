@@ -3,6 +3,7 @@ package com.example.notisiren.di
 import com.example.notisiren.domain.AlarmController
 import com.example.notisiren.domain.AlarmStatusRepository
 import com.example.notisiren.domain.NotificationAccessChecker
+import com.example.notisiren.domain.NotificationHelper
 import com.example.notisiren.domain.NotificationListenerRepository
 import dagger.Module
 import dagger.Provides
@@ -27,37 +28,15 @@ object TestAppModule {
     @Provides @Singleton
     fun provideAlarmStatusRepository(): AlarmStatusRepository = FakeAlarmStatusRepository()
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     fun provideNotificationListenerRepository(): NotificationListenerRepository = FakeNotificationListenerRepository()
 
     @Provides @Singleton
     fun provideAlarmController(): AlarmController = FakeAlarmController()
+
+    @Provides @Singleton
+    fun provideNotificationHelper(): NotificationHelper = FakeNotificationHelper()
 }
 
-    /*@Provides @Singleton
-    fun provideFakeAccessChecker(): FakeAccessChecker = FakeAccessChecker().apply {
-        enabled = true
-    }
-*/
 
-
-
-/*
-class FakeAlarmController : AlarmController {
-    var isAlarming = false
-        private set
-
-    override fun startAlarm() {
-        isAlarming = true
-    }
-
-    override fun stopAlarm() {
-        isAlarming = false
-    }
-}
-
-class FakeAccessChecker : NotificationAccessChecker {
-    var enabled = true
-
-    override fun isEnabled(): Boolean = enabled
-}*/
