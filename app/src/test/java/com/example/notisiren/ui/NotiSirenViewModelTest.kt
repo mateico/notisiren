@@ -5,6 +5,9 @@ import com.example.notisiren.domain.AlarmController
 import com.example.notisiren.domain.NotificationAccessChecker
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -27,8 +30,13 @@ private class FakeAlarmController (val alarmRepo: FakeAlarmStatusRepository) : A
     }
 }
 
-private class FakeNotificationAccessChecker(var value: Boolean) : NotificationAccessChecker {
-    override fun isEnabled(): Boolean = value
+private class FakeNotificationAccessChecker(var initialValue: Boolean) : NotificationAccessChecker {
+    private val _value = MutableStateFlow(initialValue)
+    override fun isEnabled(): Flow<Boolean> = _value.asStateFlow()
+
+    fun setAccessEnabled(hasAccess: Boolean) {
+        _value.value = hasAccess
+    }
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -61,7 +69,7 @@ class NotiSirenViewModelTest {
 
     @Test
     fun `refresh updates access flag`() = runTest {
-        fakeNotificationAccessChecker.value = false
+        fakeNotificationAccessChecker.setAccessEnabled(false)
         viewModel.onEvent(NotiSirenEvent.RefreshAccess)
         advanceUntilIdle()
         assertThat(viewModel.state.value.notificationAccessEnabled).isFalse()

@@ -2,6 +2,7 @@ package com.example.notisiren.di
 
 import android.app.PendingIntent
 import com.example.notisiren.domain.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -18,8 +19,12 @@ class FakeNotificationListenerRepository : NotificationListenerRepository {
 }
 
 class FakeAccessChecker : NotificationAccessChecker {
-    var enabled = true
-    override fun isEnabled(): Boolean = enabled
+    private val _accessEnabledFlow = MutableStateFlow(false)
+    override fun isEnabled(): Flow<Boolean> = _accessEnabledFlow.asStateFlow()
+
+    fun setAccessEnabled(hasAccess: Boolean) {
+        _accessEnabledFlow.value = hasAccess
+    }
 }
 
 class FakeAlarmController : AlarmController {
