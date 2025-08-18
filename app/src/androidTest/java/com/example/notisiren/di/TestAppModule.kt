@@ -18,19 +18,31 @@ import javax.inject.Singleton
 )
 object TestAppModule {
 
-    @Provides @Singleton
+    /*@Provides @Singleton
     fun provideFakeAccessChecker(): FakeAccessChecker = FakeAccessChecker()
 
     // Bind the interface to the same fake instance used by the test field
     @Provides @Singleton
-    fun provideNotificationAccessChecker(fake: FakeAccessChecker): NotificationAccessChecker = fake
-
-    @Provides @Singleton
-    fun provideAlarmStatusRepository(): AlarmStatusRepository = FakeAlarmStatusRepository()
+    fun provideNotificationAccessChecker(fake: FakeAccessChecker): NotificationAccessChecker = fake*/
 
     @Provides
     @Singleton
-    fun provideNotificationListenerRepository(): NotificationListenerRepository = FakeNotificationListenerRepository()
+    fun provideNotificationAccessChecker(): NotificationAccessChecker {
+        // You create and return an instance of your fake that implements the interface.
+        // If FakeAccessChecker needs constructor arguments, you provide them here.
+        // e.g., return FakeAccessChecker(initialValue = true)
+        return FakeAccessChecker()
+    }
+
+
+    @Provides @Singleton
+    fun provideListenerRepository(): FakeNotificationListenerRepository = FakeNotificationListenerRepository()
+    @Provides
+    @Singleton
+    fun provideNotificationListenerRepository(fake: FakeNotificationListenerRepository): NotificationListenerRepository = fake
+
+    @Provides @Singleton
+    fun provideAlarmStatusRepository(): AlarmStatusRepository = FakeAlarmStatusRepository()
 
     @Provides @Singleton
     fun provideAlarmController(): AlarmController = FakeAlarmController()

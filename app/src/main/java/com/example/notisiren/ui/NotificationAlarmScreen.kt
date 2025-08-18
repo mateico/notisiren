@@ -9,9 +9,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+
+val DotColor = SemanticsPropertyKey<Color>("DotColor")
 
 @Composable
 fun NotificationAlarmScreen(
@@ -31,13 +35,14 @@ fun NotificationAlarmScreen(
             if (state.notificationAccessEnabled) "Notificaciones habilitadas ✅"
             else "Habilitar Acceso a Notificaciones"
 
-
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .padding(24.dp),
         ) {
-            ColoredDot(color = if (state.isListening) Color.Green else Color.Red)
+            ColoredDot(
+                modifier = Modifier.testTag("dot_noti_listening_state"),
+                color = if (state.isListening) Color.Green else Color.Red)
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = { onEvent(NotiSirenEvent.ClickEnableNotification) },
@@ -66,13 +71,15 @@ fun NotificationAlarmScreen(
 
 @Composable
 fun ColoredDot(
+    modifier: Modifier = Modifier,
     color: Color,
     diameterDp: Dp = 20.dp
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(diameterDp)
             .background(color = color, shape = CircleShape)
+            .semantics { this[DotColor] = color }
     )
 }
 

@@ -5,6 +5,7 @@ import com.example.notisiren.domain.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
 class FakeAlarmStatusRepository : AlarmStatusRepository {
     private val _isAlarming = MutableStateFlow(false)
@@ -18,7 +19,7 @@ class FakeNotificationListenerRepository : NotificationListenerRepository {
     override fun setIsListening(value: Boolean) { _isListening.value = value }
 }
 
-class FakeAccessChecker : NotificationAccessChecker {
+class FakeAccessChecker @Inject constructor() : NotificationAccessChecker {
     private val _accessEnabledFlow = MutableStateFlow(false)
     override fun isEnabled(): Flow<Boolean> = _accessEnabledFlow.asStateFlow()
 
